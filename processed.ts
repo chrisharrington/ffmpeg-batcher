@@ -1,43 +1,53 @@
 import * as fs from 'fs';
 
 import Config from './config';
+import { Async } from './base';
 
-export class ProcessedManager {
-    processed: Processed[];
+export class ProcessedManager extends Async {
+    private processed: {} = {};
 
-    async get() : Promise<Processed[]> {
-        let resolve, reject, promise = new Promise<Processed[]>((r, e) => { resolve = r; reject = e; });
+    async get() : Promise<{}> {
+        let p = this.promise<{}>();
 
         const location = Config.processedFileLocation;
         fs.exists(location, (exists: boolean) => {
             if (!exists)
-                resolve([]);
+                p.resolve([]);
             else
                 fs.readFile(location, 'utf8', (error, data: string) => {
                     if (error)
-                        reject(error);
+                        p.reject(error);
                     else {
-                        let json = JSON.parse(data);
-                        this.processed = json.map(d => Processed.fromRaw(d));
-                        resolve(this.processed);
+                        this.processed = JSON.parse(data);
+                        p.resolve(this.processed);
                     }
                 });
         });
 
-        return promise;
+        return p.promise;
+    }
+
+    add(processed: Processed) {
+        if (!this.processed[processed.path])
+            this.processed[processed.path] = processed;
+    }
+
+    getFirstUnprocessed() : Processed | null {
+        let key = Object.keys(this.processed).find(key => !this.processed[key].isProcessed);
+        return key ? this.processed[key] : null;
     }
 
     async save() : Promise<void> {
-        let resolve, reject, promise = new Promise<void>((r, e) => { resolve = r; reject = e; });
+        let p = this.promise<void>();
 
         fs.writeFile(Config.processedFileLocation, JSON.stringify(this.processed), (error) => {
             if (error)
-                reject(error);
+                p.reject(error);
             else
-                resolve();
+                p.resolve(null);
         });
 
-        return promise;
+        return p.promise;
     }
 }
 
@@ -52,5 +62,9 @@ export class Processed {
 
     static fromRaw(data: any) : Processed {
         return new Processed(data.path, data.isProcessed);
+    }
+
+    equals(processed: Processed) {
+        return processed.path === this.path;
     }
 }

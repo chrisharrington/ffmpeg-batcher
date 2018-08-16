@@ -3,23 +3,36 @@ import 'module-alias/register';
 import Args from './args';
 import { FileManager } from './files';
 import Config from './config';
-import { ProcessedManager } from './processed';
+import { ProcessedManager, Processed } from './processed';
+import { Converter, Presets } from './converter';
 
-let manager = new FileManager();
-manager.find(Args.path, Args.extensions, Args.recursive).then(files => {
-    console.log(files);
+let converter = new Converter();
+converter.convert('c:\\temp\\test.mkv', Presets.chromecast).then(() => {
+    console.log('Done.');
+}).catch(e => {
+    console.error(e);
 });
 
-// let manager = new ProcessedManager();
-// manager.get().then(names => {
-//     console.log(names);
+
+// let fileManager = new FileManager(),
+//     processedManager = new ProcessedManager();
+
+// fileManager.find(Args.path, Args.extensions, Args.recursive).then(files => {
+//     files.forEach(file => {
+//         processedManager.add(new Processed(file, false));
+//     });
+// }).then(() => {
+//     return processedManager.save();
+// }).then(() => {
+//     let unprocessed = processedManager.getFirstUnprocessed();
+//     console.log(unprocessed);
+//     // while (unprocessed) {
+//     //     // convert file
+        
+//     //     unprocessed = processedManager.getFirstUnprocessed();
+//     // }
+
+//     console.log('No files to process.');
+// }).catch(e => {
+//     console.error(e);
 // });
-
-// read completed files
-// find all files (recursively with option) in specified folder
-// foreach file in files not already completed
-//   try
-//     process file
-//   catch
-//     graceful clean up
-

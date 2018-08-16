@@ -1,5 +1,5 @@
 class Config {
-    processedFileLocation: './processed.json'
+    processedFileLocation: string = './processed.json'
 }
 
 export default new Config();
