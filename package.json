@@ -1,0 +1,26 @@
+{
+  "name": "ffmpeg-batcher",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "@types/node": "^10.7.1",
+    "fluent-ffmpeg": "^2.1.2",
+    "minimist": "^1.2.0",
+    "module-alias": "^2.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "tsc && node app.js c:\\test\\blah --extensions mkv,avi --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrisharrington/ffmpeg-batcher.git"
+  },
+  "author": "Chris Harrington",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chrisharrington/ffmpeg-batcher/issues"
+  },
+  "homepage": "https://github.com/chrisharrington/ffmpeg-batcher#readme"
+}
