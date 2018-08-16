@@ -2,11 +2,11 @@ import * as fs from 'fs';
 
 import Config from './config';
 
-class ProcessedManager {
+export class ProcessedManager {
     processed: Processed[];
 
     async get() : Promise<Processed[]> {
-        let resolve, reject;
+        let resolve, reject, promise = new Promise<Processed[]>((r, e) => { resolve = r; reject = e; });
 
         const location = Config.processedFileLocation;
         fs.exists(location, (exists: boolean) => {
@@ -24,32 +24,22 @@ class ProcessedManager {
                 });
         });
 
-        return new Promise<Processed[]>((r, e) => {
-            resolve = r;
-            reject = e;
-        });
+        return promise;
     }
 
     async save() : Promise<void> {
-        let resolve, reject;
+        let resolve, reject, promise = new Promise<void>((r, e) => { resolve = r; reject = e; });
 
-        let raw = this.processed.map(p => JSON.stringify(p));
-        fs.writeFile(Config.processedFileLocation, raw, (error) => {
+        fs.writeFile(Config.processedFileLocation, JSON.stringify(this.processed), (error) => {
             if (error)
                 reject(error);
             else
                 resolve();
         });
 
-        return new Promise<void>((r, e) => {
-            resolve = r;
-            reject = e;
-        });
+        return promise;
     }
 }
-
-let manager = new ProcessedManager();
-export { manager as ProcessedManager };
 
 export class Processed {
     path: string;

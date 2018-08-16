@@ -11,7 +11,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "tsc && node app.js c:\\test\\blah --extensions mkv,avi --recursive"
+    "start": "tsc && node app.js \\\\bravo\\Media\\Movies --extensions mkv,avi --recursive"
   },
   "repository": {
     "type": "git",

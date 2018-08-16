@@ -1,38 +1,57 @@
 import * as fs from 'fs';
+import * as path from 'path';
 
+import { Async } from './base';
 import Config from './config';
+import { rejects } from 'assert';
 
-class Files {
-    find(path: string, extensions: string[], recursive?: boolean) : string[] {
-        return [];
+export class FileManager extends Async {
+    async find(dir: string, extensions: string[], recursive?: boolean) : Promise<string[]> {
+        return await this.findInDirectory(dir, extensions);
     }
 
-    async getProcessed() : Promise<string[]> {
-        let resolve, reject;
+    private async findInDirectory(dir: string, extensions: string[]) : Promise<string[]> {
+        let p = this.promise<string[]>();
 
-        const location = Config.processedFileLocation;
-        fs.exists(location, (exists: boolean) => {
-            if (!exists)
-                resolve([]);
-            else
-                fs.readFile(location, 'utf8', (error, data: string) => {
-                    if (error)
-                        reject(error);
-                    else
-                        resolve(JSON.parse(data));
-                });
+        let result: string[] = [];
+
+        let files = await this.getFiles(dir, extensions);
+        files.forEach(async file => {
+            let local = `${dir}\\${file}`;
+            let isDirectory = await this.isDirectory(local);
+            if (isDirectory) {
+                let localFiles = await this.findInDirectory(local, extensions);
+                result.concat(localFiles);
+            } else if (extensions.indexOf(path.extname(file).substring(1)) > -1)
+                result.push(local);
         });
-        Config.processedFileLocation;
-        
-        return new Promise<string[]>((r, e) => {
-            resolve = r;
-            reject = e;
-        });
+
+        p.resolve(result);
+
+        return p.promise;
     }
 
-    private findInDirectory(path: string, extensions: string[]) : string[] {
-        return [];
+    private getFiles(dir: string, extensions: string[]) : Promise<string[]> {
+        let p = this.promise<string[]>();
+
+        fs.readdir(dir, (error, files: string[]) =>{
+            if (error) return p.reject(error);
+            p.resolve(files);
+        });
+
+        return p.promise;
+    }
+
+    private async isDirectory(dir) : Promise<boolean> {
+        let p = this.promise<boolean>();
+
+        fs.lstat(dir, (error, stat: fs.Stats) => {
+            if (error) return p.reject(error);
+
+            let blah = stat.isDirectory();
+            return stat.isDirectory();
+        })
+
+        return p.promise;
     }
 }
-
-export default new Files();

@@ -1,10 +1,19 @@
 import 'module-alias/register';
 
 import Args from './args';
-import Files from './files';
+import { FileManager } from './files';
 import Config from './config';
+import { ProcessedManager } from './processed';
 
-Files.find(Args.path, Args.extensions, Args.recursive);
+let manager = new FileManager();
+manager.find(Args.path, Args.extensions, Args.recursive).then(files => {
+    console.log(files);
+});
+
+// let manager = new ProcessedManager();
+// manager.get().then(names => {
+//     console.log(names);
+// });
 
 // read completed files
 // find all files (recursively with option) in specified folder
