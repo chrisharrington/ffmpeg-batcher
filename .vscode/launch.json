@@ -14,7 +14,8 @@
             ],
             "preLaunchTask": "tsc",
             "args": [
-                "\\\\bravo\\Media\\Movies",
+                //"\\\\bravo\\Media\\Movies",
+                "c:\\temp",
                 "--extensions",
                 "mkv,avi",
                 "--recursive"

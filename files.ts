@@ -6,8 +6,10 @@ import Config from './config';
 
 export class FileManager extends Async {
     async find(dir: string, extensions: string[], recursive?: boolean) : Promise<string[]> {
+        console.log(`FileManager.find: ${dir}, ${extensions}, ${recursive}`);
         return new Promise<string[]>(resolve => {
             let files = this.findInDirectory(dir, extensions);
+            console.log(`FileManager.find: Found ${files.length} files`);
             resolve(files);
         });
     }

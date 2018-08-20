@@ -7,6 +7,7 @@ export class ProcessedManager extends Async {
     private processed: {} = {};
 
     async get() : Promise<{}> {
+        console.log(`ProcessedManager.get`);
         let p = this.promise<{}>();
 
         const location = Config.processedFileLocation;
@@ -28,7 +29,7 @@ export class ProcessedManager extends Async {
     }
 
     add(processed: Processed) {
-        if (!this.processed[processed.path])
+        if (!this.processed[processed.path]) 
             this.processed[processed.path] = processed;
     }
 
@@ -66,5 +67,9 @@ export class Processed {
 
     equals(processed: Processed) {
         return processed.path === this.path;
+    }
+
+    toString() {
+        return `${this.path} / ${this.isProcessed}`;
     }
 }

@@ -6,28 +6,31 @@ import { Async, IPromise } from './base';
 export class Converter extends Async {
     suffix: string = '-temp';
 
-    async convert(path: string, preset: Function) : Promise<void> {
+    convert(path: string, preset: Function) : Promise<void> {
+        console.log(`Converter.convert: ${path}`);
         let p = this.promise<void>();
-
+        
         let newPath = `${path}${this.suffix}`;
+        if (fs.existsSync(newPath))
+            fs.unlinkSync(newPath);
+        
         ffmpeg(path)
             .preset(preset)
             .on('error', e => p.reject(e))
-            .on('progress', data => console.log(data.percent))
-            .on('end', () => this.moveFiles(newPath, p))
+            .on('progress', data => console.log(`Converter.convert: Progress ${data.percent}`))
+            .on('end', () => {
+                this.moveFiles(path, newPath);
+                p.resolve(null);
+            })
             .save(newPath);
 
         return p.promise;
     }
 
-    private moveFiles(path: string, p: IPromise<void>) {
-        try {
-            fs.unlinkSync(path);
-            fs.renameSync(path, path.substring(0, path.length - this.suffix.length));
-            p.resolve(null);
-        } catch (e) {
-            p.reject(e);
-        }
+    private moveFiles(oldPath: string, newPath: string) {
+        console.log(`Converter.moveFiles: ${oldPath}, ${newPath}`);
+        fs.unlinkSync(oldPath);
+        fs.renameSync(newPath, oldPath);
     }
 }
 
